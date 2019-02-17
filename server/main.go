@@ -59,6 +59,10 @@ func main() {
 		Db:     db,
 	}
 
+	// Serve swagger UI at /swagger
+	swaggerH := http.StripPrefix("/swagger/", http.FileServer(http.Dir("/swaggerui/")))
+	r.PathPrefix("/swagger/").Handler(swaggerH)
+
 	r.HandleFunc("/search", sh.SearchHandler).Methods("GET")
 	r.HandleFunc("/wishList/{wishListId}", wh.GetWishListHandler).Methods("GET")
 	r.HandleFunc("/wishList", wh.PostWishListHandler).Methods("POST")

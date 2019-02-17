@@ -12,3 +12,6 @@
 *.out
 
 wishList.sqlite3
+build
+build/*
+.idea

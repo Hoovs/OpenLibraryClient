@@ -98,4 +98,6 @@ func (wh *WishListHandler) DeleteWishListHandler(w http.ResponseWriter, r *http.
 		write(w, http.StatusBadRequest, []byte("Unable to delete from wish list"), wh.Logger)
 		return
 	}
+	write(w, http.StatusNoContent, nil, wh.Logger)
+	return
 }
