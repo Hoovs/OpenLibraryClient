@@ -20,3 +20,9 @@ wishList.sqlite3:
 
 image: build/OpenLibrary wishList.sqlite3
 	docker build -t open_library:latest .
+
+up:
+	docker-compose up
+
+down:
+	docker-compose down
