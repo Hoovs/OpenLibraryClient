@@ -19,6 +19,7 @@ type SearchHandler struct {
 func (s *SearchHandler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	getUrl, err := s.createLibraryURL(r.URL.Query())
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
 	}
@@ -28,6 +29,7 @@ func (s *SearchHandler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
 	}
@@ -35,9 +37,11 @@ func (s *SearchHandler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	v, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("unable to read body"))
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	w.Write(v)
 	return
 }
@@ -49,7 +53,7 @@ func (s *SearchHandler) createLibraryURL(v url.Values) (string, error) {
 		return "", errors.New("must specify a q= parameter")
 	}
 
-	s.Logger.Info("Calling get book for", zap.String("q", q))
-	url := &url.URL{Path: s.BaseSearchUrl + q}
-	return url.String()[2:], nil
+	s.Logger.Info("Library URL", zap.String("q", q))
+	u := &url.URL{Path: s.BaseSearchUrl + q}
+	return u.String()[2:], nil
 }

@@ -19,3 +19,6 @@ built in DB or an online one)
  - [ ] Unit tests are completed.
  - [ ] Document database choice reason.
  - [ ] (Optional) Add ability for read list.
+ 
+## Prerequisites
+ - Must have sqlite3 installed locally.

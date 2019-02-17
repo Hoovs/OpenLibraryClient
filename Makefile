@@ -1,10 +1,12 @@
 TEST_FLAGS := -v -race
+
 vendor:
 	dep ensure
+
 build:
 	mkdir build
 
-build/OpenLibary: build
+build/OpenLibrary: build
 	go build -o build/OpenLibraryServer ./server
 
 cleanBuild:
@@ -13,3 +15,7 @@ cleanBuild:
 test:
 	go test $(TEST_FLAGS) ./...
 
+wishList.sqlite3:
+	sqlite3 wishList.sqlite3 < sql/wishlist.sql
+
+image: build/OpenLibrary wishList.sqlite3
