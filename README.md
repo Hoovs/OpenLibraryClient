@@ -21,12 +21,14 @@ built in DB or an online one)
  - [ ] (Optional) Add ability for read list.
  
 ## Prerequisites
- - Must have sqlite3 installed locally.
+ - Must have sqlite3 installed.
+ - Must have docker installed.
+ - Must have docker-compose installed.
  
 ## How to run
 ```$xslt
 make image
-./build/OpenLibraryServer
+make up
 ```
 Then you can curl as below
 ```$xslt
