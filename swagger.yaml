@@ -1,0 +1,67 @@
+swagger: "2.0"
+info:
+  title: "OpenLibrary client with wish list"
+  description: "This is a basic open library client with ability to track a wishlist"
+  version: "0.1.0"
+
+basePath: "/"
+paths:
+  /search:
+    get:
+      tags:
+        - "Search"
+      description: "Wraps a call following the same semantics as the open library client"
+      operationId: "WishList"
+      produces:
+      - "application/json"
+      response:
+        '200':
+          description: "Returns back the same response as open library"
+  /wishList:
+    post:
+      tags:
+        - "Wish List"
+      description: "Creates a new entry in the wishlist db for a given user, book tuple"
+      operationId: "WishList"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "wishListEntry"
+          in: "body"
+          required: true
+      responses:
+        "200":
+          description: "DB record was recorded successfully"
+        "400":
+          description: "Couldn't parse body or values were missing"
+  /wishList/{wishListId}:
+    get:
+      tags:
+        - "Wish List"
+      description: "Queries the wishlist db for the wishListId and returns the open library result if existing."
+      operationId: "WishList"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "wishListId"
+          description: "Db record id for the wish list entry"
+          required: true
+          type: "integer"
+      responses:
+        "200":
+          description: "Response from the open library api as well as the db row entry"
+    delete:
+      tags:
+        - "Wish List"
+      description: "Deletes a single wish list entry based on the db identifier"
+      operationId: "WishList"
+      parameters:
+       - name: "wishListId"
+         description: "Db record id for the wish list entry"
+         required: true
+         type: "integer"
+      responses:
+        "204":
+          description: "row was deleted successfully"
+        "400":
+          description: "row couldn't be found or unable to parse id"
