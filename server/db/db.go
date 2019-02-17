@@ -11,8 +11,8 @@ type DB struct {
 }
 
 type WishListRow struct {
-	Id      int  `json:"id,omitempty"`
 	UserId  int  `json:"userId"`
+	BookId  int  `json:"bookId"`
 	Deleted bool `json:"deleted"`
 }
 
@@ -72,4 +72,24 @@ func (d *DB) GetWishList(id int) (*WishListRow, error) {
 		return nil, err
 	}
 	return &w, nil
+}
+
+func (d *DB) InsertRow(row WishListRow) error {
+	if row.BookId == 0 {
+		return errors.New("bookId cannot be empty")
+	}
+	if row.UserId == 0 {
+		return errors.New("userId cannot be empty")
+	}
+
+	sqlInsert := `INSERT INTO wishlist (userid, bookid) VALUES (?, ?)`
+
+	stmt, err := d.db.Prepare(sqlInsert)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(row.UserId, row.BookId)
+	return err
 }

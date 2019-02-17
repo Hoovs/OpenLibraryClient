@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/Hoovs/OpenLibraryClient/server/db"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -17,6 +18,25 @@ type WishListHandler struct {
 
 func (wh *WishListHandler) PostWishListHandler(w http.ResponseWriter, r *http.Request) {
 	wh.Logger.Info("WishListHandler for post called")
+	bodyRow := &db.WishListRow{}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	}
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, bodyRow)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	}
+
+	err = wh.Db.InsertRow(*bodyRow)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	}
 }
 
 func (wh *WishListHandler) GetWishListHandler(w http.ResponseWriter, r *http.Request) {
