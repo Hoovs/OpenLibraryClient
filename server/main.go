@@ -60,7 +60,8 @@ func main() {
 	}
 
 	r.HandleFunc("/search", sh.SearchHandler).Methods("GET")
-	r.HandleFunc("/wishList", wh.GetWishListHandler).Methods("POST")
+	r.HandleFunc("/wishList/{wishListId}", wh.GetWishListHandler).Methods("GET")
+	r.HandleFunc("/wishList/{wishListId}", wh.PostWishListHandler).Methods("POST")
 	r.HandleFunc("/wishList/{wishListId}", wh.DeleteWishListHandler).Methods("DELETE")
 
 	// Bind to a port and pass our router in

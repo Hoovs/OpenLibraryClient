@@ -10,6 +10,12 @@ type DB struct {
 	db *sql.DB
 }
 
+type WishListRow struct {
+	Id      int  `json:"id,omitempty"`
+	UserId  int  `json:"userId"`
+	Deleted bool `json:"deleted"`
+}
+
 func InitDB(filepath string) (*DB, error) {
 	db, err := sql.Open("sqlite3", filepath)
 	if err != nil {
@@ -45,4 +51,25 @@ func (d *DB) DeleteWishList(id int) error {
 		return errors.New("wish list record not found")
 	}
 	return nil
+}
+
+func (d *DB) GetWishList(id int) (*WishListRow, error) {
+	sqlSelect := `SELECT userId, deleted FROM wishlist WHERE id = ?`
+
+	stmt, err := d.db.Prepare(sqlSelect)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rs := stmt.QueryRow(id)
+	if rs == nil {
+		return nil, errors.New("wish list record not found")
+	}
+	w := WishListRow{}
+	err = rs.Scan(&w.UserId, &w.Deleted)
+	if err != nil {
+		return nil, err
+	}
+	return &w, nil
 }
