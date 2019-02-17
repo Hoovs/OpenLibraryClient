@@ -14,11 +14,24 @@ built in DB or an online one)
 
 ## Project Features
  - [ ] Fully Documented API interface
- - [ ] Wish list allows Addition of book.
- - [ ] Wish list allows Delete of a book.
- - [ ] Unit tests are completed.
+ - [X] Wish list allows Addition of book.
+ - [X] Wish list allows Delete of a book.
+ - [X] Unit tests are completed.
  - [ ] Document database choice reason.
  - [ ] (Optional) Add ability for read list.
  
 ## Prerequisites
  - Must have sqlite3 installed locally.
+ 
+## How to run
+```$xslt
+make image
+./build/OpenLibraryServer
+```
+Then you can curl as below
+```$xslt
+curl -XGET http://localhost:8080/wishList/1
+curl -XPOST http://localhost:8080/wishList -d '{"userId":1, "bookTitle":"1984"}'
+curl -XDELETE http://localhost:8080/wishList/1
+curl -XGET http://localhost:8080/search?q=1984
+```

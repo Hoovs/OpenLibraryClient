@@ -1,4 +1,4 @@
-TEST_FLAGS := -v -race
+TEST_FLAGS := -v
 
 vendor:
 	dep ensure
@@ -7,7 +7,7 @@ build:
 	mkdir build
 
 build/OpenLibrary: build
-	go build -o build/OpenLibraryServer ./server
+	env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-linkmode external -extldflags -static" -o build/OpenLibraryServer ./server
 
 cleanBuild:
 	rm -rf build
@@ -19,3 +19,4 @@ wishList.sqlite3:
 	sqlite3 wishList.sqlite3 < sql/wishlist.sql
 
 image: build/OpenLibrary wishList.sqlite3
+	docker build -t open_library:latest .

@@ -14,13 +14,20 @@ type SearchHandler struct {
 	BaseSearchUrl string
 }
 
+// Internal helper function to catch error from writing back to user.
+func write(w http.ResponseWriter, header int, body []byte, l *zap.Logger) {
+	w.WriteHeader(header)
+	if _, err := w.Write(body); err != nil {
+		l.Error(err.Error())
+	}
+}
+
 // SearchHandler handles a GET request and calls s.BaseSearchUrl with the passed in
-// query parameters
+// query parameters.
 func (s *SearchHandler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	getUrl, err := s.createLibraryURL(r.URL.Query())
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		write(w, http.StatusBadRequest, []byte(err.Error()), s.Logger)
 		return
 	}
 	s.Logger.Info("Calling remote client", zap.String("url", getUrl))
@@ -29,20 +36,21 @@ func (s *SearchHandler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		write(w, http.StatusBadRequest, []byte(err.Error()), s.Logger)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			s.Logger.Error(err.Error())
+		}
+	}()
 
 	v, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("unable to read body"))
+		write(w, http.StatusInternalServerError, []byte("unable to read body"), s.Logger)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(v)
+	write(w, http.StatusOK, v, s.Logger)
 	return
 }
 

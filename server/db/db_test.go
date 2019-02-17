@@ -16,7 +16,7 @@ func setupDb() (*DB, error) {
 		return nil, err
 	}
 
-	_, err = db.db.Exec(`INSERT INTO wishlist (id, userId, bookId) VALUES (1, 1, 1)`)
+	_, err = db.db.Exec(`INSERT INTO wishlist (id, userId, bookTitle) VALUES (1, 1, "inserted")`)
 	return db, err
 }
 
@@ -123,13 +123,13 @@ func TestInsertWishList(t *testing.T) {
 			},
 		}, {
 			name: "Missing user id fails",
-			row:  WishListRow{BookId: 1},
+			row:  WishListRow{BookTitle: "test"},
 			expected: func(e error) bool {
 				return e != nil
 			},
 		}, {
 			name: "Complete row passes",
-			row:  WishListRow{UserId: 2, BookId: 1},
+			row:  WishListRow{UserId: 2, BookTitle: "test"},
 			expected: func(e error) bool {
 				return e == nil
 			},
