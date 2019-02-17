@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	db2 "github.com/Hoovs/OpenLibraryClient/server/db"
 	"github.com/Hoovs/OpenLibraryClient/server/handlers"
 	"net/http"
 	"os"
@@ -20,6 +21,7 @@ var (
 )
 
 func statusHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("ok")); err != nil {
 		zap.Error(errors.New("couldn't write out status message"))
 	}
@@ -39,6 +41,11 @@ func main() {
 	}()
 	logger.Info("Running server", zap.String("port", port))
 
+	db, err := db2.InitDB(os.Getenv("DB_FILE"))
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+
 	r := mux.NewRouter()
 	// Handle the status endpoint
 	r.HandleFunc("/status", statusHandler).Methods("GET")
@@ -49,11 +56,12 @@ func main() {
 
 	wh := handlers.WishListHandler{
 		Logger: logger,
+		Db:     db,
 	}
 
 	r.HandleFunc("/search", sh.SearchHandler).Methods("GET")
 	r.HandleFunc("/wishList", wh.GetWishListHandler).Methods("POST")
-	r.HandleFunc("/wishList", nil).Methods("DELETE")
+	r.HandleFunc("/wishList/{wishListId}", wh.DeleteWishListHandler).Methods("DELETE")
 
 	// Bind to a port and pass our router in
 	logger.Fatal(http.ListenAndServe(port, r).Error())
