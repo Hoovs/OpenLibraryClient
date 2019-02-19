@@ -1,0 +1,18 @@
+FROM golang:1.10 as goroot
+WORKDIR /go/src/app
+COPY . .
+RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+RUN dep ensure
+RUN env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags "-linkmode external -extldflags -static" -o build/OpenLibraryServer ./server
+
+FROM alpine:latest as certs
+RUN apk --update add ca-certificates
+
+FROM scratch
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=goroot /go/src/app/build/OpenLibraryServer /OpenLibraryServer
+COPY wishList.sqlite3 /
+
+COPY swaggerui /swaggerui
+COPY swagger.yaml /swaggerui/swagger.yaml
+ENTRYPOINT ["/OpenLibraryServer"]
