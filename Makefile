@@ -21,6 +21,9 @@ wishList.sqlite3:
 image: build/OpenLibrary wishList.sqlite3
 	docker build -t open_library:latest .
 
+imageNoGo:
+	docker build -t open_library:latest -f Dockerfile_complete .
+
 up:
 	docker-compose up
 

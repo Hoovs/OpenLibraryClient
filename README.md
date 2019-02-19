@@ -24,9 +24,22 @@ built in DB or an online one)
  - Must have sqlite3 installed.
  - Must have docker installed.
  - Must have docker-compose installed.
- 
+
+## How to build
+If you want to build the binary instead of using the one specified you need the following:
+ - Go 1.10+
+ - dep which can be downloaded from `curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh`
+
+You can also use the dockerfile to build this if you rather not install go. 
+Instead of following the How to run below run:
+```
+make imageNoGo
+make up
+```
+
 ## How to run
 ```$xslt
+make vendor
 make image
 make up
 ```
